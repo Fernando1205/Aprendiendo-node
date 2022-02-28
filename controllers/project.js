@@ -57,7 +57,54 @@ var controller = {
                 project: project
             });
         });
+    },
+    getProjects: function(req, res) {
+        Project.find({}).sort('year').exec((err, project) => {
+            if (err) return res.status(500).send({
+                message: 'Error al devolver los datos'
+            });
+
+            if (!project) return res.status(404).send({
+                message: 'No se ha podido encontrar datos'
+            });
+
+            return res.status(200).send({
+                project: project
+            });
+        });
+    },
+    updateProject: function(req, res) {
+        console.log(req.params.id);
+        let projectId = req.params.id;
+        let update = req.body;
+
+        Project.findByIdAndUpdate(projectId, update, { new: true }, (err, projectUpdated) => {
+            if (err) return res.status(500).send({
+                message: 'Error al actualizar los datos'
+            });
+
+            if (!projectUpdated) return res.status(404).send({
+                message: 'No se ha podido encontrar el dato a actualizar'
+            });
+
+            return res.status(200).send({
+                project: projectUpdated
+            });
+        });
+    },
+    deleteProject: function(req, res) {
+        let id = req.params.id;
+        Project.findByIdAndDelete(id, (err, project) => {
+            if (err) return res.send({ message: 'Error al eliminar proyecto' });
+
+            if (!project) return res.send({ message: 'No se ha encontrado el proyecto a eliminar' });
+
+            return res.send({
+                project: project
+            })
+        });
     }
+
 }
 
 module.exports = controller;

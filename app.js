@@ -1,10 +1,9 @@
 'use strict';
+
 const express = require('express');
 var bodyParser = require('body-parser');
 
 const app = express();
-
-
 
 // Cargar archivos de Rutas
 var project_routes = require('./routes/project');
@@ -17,7 +16,6 @@ app.use(bodyParser.json());
 
 // RUTAS
 app.use('/api', project_routes);
-
 
 // Exportar
 module.exports = app;
