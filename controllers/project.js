@@ -1,6 +1,8 @@
 'use strict';
 
 var Project = require('../models/Project');
+const fs = require('fs');
+const path = require('path');
 
 var controller = {
     home: function(req, res) {
@@ -33,7 +35,7 @@ var controller = {
                 message: 'No se ha podido guardar el proyecto'
             });
 
-            return res.status(200).send({
+            return res.status(201).send({
                 project: projectStored,
                 message: 'Proyecto guardado exitosamente'
             });
@@ -99,10 +101,61 @@ var controller = {
 
             if (!project) return res.send({ message: 'No se ha encontrado el proyecto a eliminar' });
 
-            return res.send({
+            return res.status(200).send({
                 project: project
             })
         });
+    },
+    uploadImage: function(req, res) {
+        let id = req.params.id;
+        let fileName = 'Imagen no subida...';
+
+        if (req.files) {
+            let filePath = req.files.image.path;
+            let fileSplit = filePath.split('\\');
+            let fileName = fileSplit[1];
+            let exSplit = fileName.split('\.');
+            let fileExt = exSplit[1];
+
+            if (fileExt === 'png' || fileExt === 'jpg' || fileExt === 'jpeg' || fileExt === 'gif') {
+
+                Project.findByIdAndUpdate(id, { image: fileName }, { new: true }, (err, project) => {
+
+                    if (err) return res.status(500).send({ message: 'Archivo no se ha subido' });
+
+                    if (!project) return res.status(404).send({ message: 'No se ha encontrado el proyecto' });
+
+                    return res.status(200).send({
+                        project: project
+                    });
+                });
+            } else {
+                fs.unlink(filePath, (err) => {
+                    return res.status(200).send({
+                        message: 'La extensión no es validad'
+                    });
+                });
+            }
+
+        } else {
+            return res.status(200).send({
+                message: fileName
+            });
+        }
+    },
+    getImageFile: function(req, res) {
+        let file = req.params.image;
+        let path_file = './uploads/' + file;
+
+        fs.exists(path_file, (exists) => {
+            if (exists) {
+                return res.sendFile(path.resolve(path_file));
+            } else {
+                return res.status(200).send({
+                    message: 'No existe la imagen'
+                });
+            }
+        })
     }
 
 }
