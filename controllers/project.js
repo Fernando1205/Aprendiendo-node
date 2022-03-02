@@ -117,7 +117,7 @@ var controller = {
             let exSplit = fileName.split('\.');
             let fileExt = exSplit[1];
 
-            if (fileExt === 'png' || fileExt === 'jpg' || fileExt === 'jpeg' || fileExt === 'gif') {
+            if (fileExt == 'png' || fileExt == 'jpg' || fileExt == 'jpeg' || fileExt == 'gif' || fileExt == 'PNG') {
 
                 Project.findByIdAndUpdate(id, { image: fileName }, { new: true }, (err, project) => {
 
